@@ -5,10 +5,7 @@ const helmet = require("helmet");
 const path = require("path");
 const fs = require("fs");
 const { connectDatabase } = require("./src/utils/database");
-const {
-  helmetConfig,
-  apiLimiter,
-} = require("./src/middleware/security");
+const { helmetConfig, apiLimiter } = require("./src/middleware/security");
 
 // Import routes
 const authRoutes = require("./src/routes/auth");
@@ -53,7 +50,10 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? ["https://psblog.prasadshaswat.tech"]
+        ? [
+            "https://blog.prasadshaswat.app",
+            "https://psblog.prasadshaswat.tech",
+          ]
         : ["http://localhost:3000", "http://localhost:5173"],
     credentials: true,
   })
