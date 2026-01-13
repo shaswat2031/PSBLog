@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+
+Sitemap: https://psblog.prasadshaswat.tech/sitemap.xml
+
+Crawl-delay: 10
