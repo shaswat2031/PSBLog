@@ -45,11 +45,23 @@ const initializeApp = async () => {
 };
 
 // CORS configuration - must be before other middleware
+const allowedOrigins = [
+  "https://blog.prasadshaswat.app",
+  "https://psblog.prasadshaswat.tech",
+  "http://localhost:3000",
+  "http://localhost:5173",
+];
+
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? ["https://blog.prasadshaswat.app", "https://psblog.prasadshaswat.tech"]
-      : ["http://localhost:3000", "http://localhost:5173"],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
