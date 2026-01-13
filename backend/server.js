@@ -44,20 +44,26 @@ const initializeApp = async () => {
   }
 };
 
-// Security Middleware
+// CORS configuration - must be before other middleware
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "production"
+      ? ["https://blog.prasadshaswat.app", "https://psblog.prasadshaswat.tech"]
+      : ["http://localhost:3000", "http://localhost:5173"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+};
+
+// Apply CORS before other middleware
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options("*", cors(corsOptions));
+
+// Security Middleware (after CORS)
 app.use(helmetConfig);
-app.use(
-  cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? [
-            "https://blog.prasadshaswat.app",
-            "https://psblog.prasadshaswat.tech",
-          ]
-        : ["http://localhost:3000", "http://localhost:5173"],
-    credentials: true,
-  })
-);
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
