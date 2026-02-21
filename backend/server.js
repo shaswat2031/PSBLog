@@ -31,26 +31,34 @@ const initializeApp = async () => {
     await connectDatabase();
     console.log("✅ Database connection established");
 
-    // Create uploads directory (still useful for temp files or backups)
-    const uploadsDir = path.join(__dirname, "uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+    // Create uploads directory if not on Vercel (read-only filesystem)
+    if (!process.env.VERCEL) {
+      const uploadsDir = path.join(__dirname, "uploads");
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+        console.log("✅ Uploads directory ensured");
+      }
     }
 
     console.log("✅ Application initialized successfully");
   } catch (error) {
     console.error("❌ Failed to initialize application:", error);
-    process.exit(1);
+    if (!process.env.VERCEL) {
+      process.exit(1);
+    }
+    throw error;
   }
 };
 
 // CORS configuration - must be before other middleware
 const allowedOrigins = [
+  process.env.FRONTEND_URL,
   "https://blog.prasadshaswat.app",
   "https://psblog.prasadshaswat.tech",
+  "https://psb-log-i23g.vercel.app", // Common pattern
   "http://localhost:3000",
   "http://localhost:5173",
-];
+].filter(Boolean);
 
 const corsOptions = {
   origin: function (origin, callback) {
