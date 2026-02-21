@@ -116,50 +116,61 @@ app.use((error, req, res, next) => {
     .json(formatResponse(false, error.message || "Internal server error"));
 });
 
+// Export the app for Vercel
+module.exports = app;
+
 // Start server with proper error handling
 const startServer = async () => {
   try {
     await initializeApp();
 
-    const server = app.listen(PORT, () => {
-      console.log(`🚀 PS Blog API Server running on port ${PORT}`);
-      console.log(`📱 Environment: ${process.env.NODE_ENV || "development"}`);
-      console.log(`🌐 API URL: http://localhost:${PORT}`);
-      console.log(`📚 API Docs: http://localhost:${PORT}/api/health`);
-    });
-
-    // Handle server errors
-    server.on("error", (err) => {
-      if (err.code === "EADDRINUSE") {
-        console.error(
-          `❌ Port ${PORT} is already in use. Please try a different port.`
-        );
-        console.log(`💡 You can change the port in the .env file`);
-      } else {
-        console.error("❌ Server error:", err);
-      }
-      process.exit(1);
-    });
-
-    // Graceful shutdown
-    process.on("SIGTERM", () => {
-      console.log("🛑 Received SIGTERM. Shutting down gracefully...");
-      server.close(() => {
-        console.log("✅ Server closed");
-        process.exit(0);
+    // Only listen if we're not in a Vercel environment
+    if (!process.env.VERCEL) {
+      const server = app.listen(PORT, () => {
+        console.log(`🚀 PS Blog API Server running on port ${PORT}`);
+        console.log(`📱 Environment: ${process.env.NODE_ENV || "development"}`);
+        console.log(`🌐 API URL: http://localhost:${PORT}`);
+        console.log(`📚 API Docs: http://localhost:${PORT}/api/health`);
       });
-    });
 
-    process.on("SIGINT", () => {
-      console.log("\n🛑 Received SIGINT. Shutting down gracefully...");
-      server.close(() => {
-        console.log("✅ Server closed");
-        process.exit(0);
+      // Handle server errors
+      server.on("error", (err) => {
+        if (err.code === "EADDRINUSE") {
+          console.error(
+            `❌ Port ${PORT} is already in use. Please try a different port.`
+          );
+          console.log(`💡 You can change the port in the .env file`);
+        } else {
+          console.error("❌ Server error:", err);
+        }
+        process.exit(1);
       });
-    });
+
+      // Graceful shutdown
+      process.on("SIGTERM", () => {
+        console.log("🛑 Received SIGTERM. Shutting down gracefully...");
+        server.close(() => {
+          console.log("✅ Server closed");
+          process.exit(0);
+        });
+      });
+
+      process.on("SIGINT", () => {
+        console.log("\n🛑 Received SIGINT. Shutting down gracefully...");
+        server.close(() => {
+          console.log("✅ Server closed");
+          process.exit(0);
+        });
+      });
+    } else {
+      console.log("✅ Serverless function warm and ready");
+    }
   } catch (error) {
     console.error("❌ Failed to start server:", error);
-    process.exit(1);
+    // Don't exit in serverless environment as it might be a temporary issue
+    if (!process.env.VERCEL) {
+      process.exit(1);
+    }
   }
 };
 

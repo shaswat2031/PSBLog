@@ -206,6 +206,37 @@ html {
   animation-delay: 4s;
 }
 
+/* Text Gradients */
+.text-gradient-gold {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500;
+}
+
+.text-gradient-teal {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-teal-400 via-emerald-500 to-teal-600;
+}
+
+.text-gradient-premium {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-stone-900 via-stone-600 to-stone-900;
+}
+
+/* Enhanced Glassmorphism */
+.glass-premium {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(28, 25, 23, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Premium Shadows */
+.shadow-premium {
+  shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+}
+
 /* Reveal Animations */
 @keyframes slideUpFade {
   from {
