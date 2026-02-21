@@ -99,6 +99,21 @@ app.use("/api/blogs", blogRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 
+// Root route for API discovery and health check
+app.get("/", (req, res) => {
+  res.json(
+    formatResponse(true, "PS Blog API is active", {
+      status: "Healthy",
+      environment: process.env.NODE_ENV,
+      endpoints: {
+        blogs: "/api/blogs",
+        health: "/api/health",
+        auth: "/api/auth/me (requires authentication)"
+      }
+    })
+  );
+});
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json(
@@ -106,13 +121,14 @@ app.get("/api/health", (req, res) => {
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
       port: PORT,
+      database: "connected"
     })
   );
 });
 
 // 404 handler
 app.use("*", (req, res) => {
-  res.status(404).json(formatResponse(false, "Route not found"));
+  res.status(404).json(formatResponse(false, `Route not found: ${req.originalUrl}`));
 });
 
 // Global error handler
